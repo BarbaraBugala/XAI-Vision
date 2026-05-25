@@ -25,7 +25,7 @@ class XAIPipeline:
         device = pred_data["device"]
 
         # 2. Output location generation
-        output_dir = os.path.join("xai_results", os.path.splitext(os.path.basename(image_path)), method_name)
+        output_dir = os.path.join("xai_results", os.path.splitext(os.path.basename(image_path))[0], method_name)
         os.makedirs(output_dir, exist_ok=True)
         
         print(f"File: {image_path} | Pred: {pred_data['pred_label']} ({pred_data['confidence']})")
