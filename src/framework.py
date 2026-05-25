@@ -1,78 +1,34 @@
-import json
+# src/framework.py
 import os
+import json
 import torch
-import torchvision.models as models
-import torchvision.transforms as transforms
-from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
-import torch.nn.functional as F
 from captum.attr import visualization as viz
 
-# Internal project imports
 from xai_methods.registry import XAIRegistry
 from xai_methods.segmentation import get_superpixels
+from run_prediction import run_prediction
 
 class XAIPipeline:
-    def __init__(self, device=None):
-        """
-        Sets up the environment, model, and standard preprocessing weights.
-        """
-        self.device = device if device else torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        
-        # Load stable model configuration
-        self.weights = models.ResNet18_Weights.DEFAULT
-        self.labels = self.weights.meta["categories"]
-        self.model = models.resnet18(weights=self.weights).to(self.device)
-        self.model.eval()
-        
-        # Core ImageNet Transformation
-        self.transform = transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-        ])
-        
-        # Inverse Normalization for pristine Matplotlib colors
-        self.inv_normalize = transforms.Normalize(
-            mean=[-0.485/0.229, -0.456/0.224, -0.406/0.225],
-            std=[1/0.229, 1/0.224, 1/0.225]
-        )
-
-    def _preprocess_image(self, image_path):
-        """Loads and formats a local image into PyTorch and back into clean NumPy."""
-        orig_image = Image.open(image_path).convert('RGB')
-        input_tensor = self.transform(orig_image).unsqueeze(0).to(self.device)
-        
-        # Prepare background display array
-        img_tensor_unnorm = self.inv_normalize(input_tensor.squeeze(0))
-        img_np = img_tensor_unnorm.permute(1, 2, 0).detach().cpu().numpy()
-        
-        return input_tensor, img_np
-
-    def _get_prediction(self, input_tensor):
-        """Performs forward inference pass and tracks target class indices safely."""
-        with torch.no_grad():
-            output = self.model(input_tensor)
-            
-        probabilities = F.softmax(output[0], dim=0)
-        prob, class_idx = torch.max(probabilities, dim=0)
-        return class_idx.item(), prob.item()
-
     def run_experiment(self, image_path, method_name, config):
         """
-        Orchestrates an XAI interpretation task and saves plots directly.
+        Orchestrates an XAI interpretation task using precomputed predictions.
         """
-        # 1. Output location generation
-        output_dir = os.path.join("xai_results",os.path.splitext(os.path.basename(image_path))[0], method_name)
+        # 1. Extract unified prediction outputs directly
+        pred_data = run_prediction(image_path)
+        
+        model = pred_data["model"]
+        input_tensor = pred_data["input_tensor"]
+        img_np = pred_data["img_np"]
+        class_idx = pred_data["class_idx"]
+        device = pred_data["device"]
+
+        # 2. Output location generation
+        output_dir = os.path.join("xai_results", os.path.splitext(os.path.basename(image_path)), method_name)
         os.makedirs(output_dir, exist_ok=True)
         
-        # 2. Extract Data
-        input_tensor, img_np = self._preprocess_image(image_path)
-        class_idx, confidence = self._get_prediction(input_tensor)
-        
-        print(f"File: {image_path} | Pred: {self.labels[class_idx]} ({confidence*100:.1f}%)")
+        print(f"File: {image_path} | Pred: {pred_data['pred_label']} ({pred_data['confidence']})")
         print(f"Calculating attributions via '{method_name}'...")
 
         # 3. Dynamic Kwargs Mapping based on targeted features
@@ -83,7 +39,7 @@ class XAIPipeline:
                 n_segments=config.get("n_segments", 50), 
                 compactness=config.get("compactness", 10), 
                 sigma=config.get("sigma", 1)
-            ).to(self.device)
+            ).to(device)
             
             xai_kwargs = {
                 "baseline": config.get("baseline_type", "zeros"),
@@ -96,23 +52,19 @@ class XAIPipeline:
             xai_kwargs = {"target_layer_name": config.get("target_layer_name", "layer4")}
 
         # 4. Generate Core Attributions
-        explainer = XAIRegistry(model=self.model, method_name=method_name)
+        explainer = XAIRegistry(model=model, method_name=method_name)
         attributions = explainer.compute(input_tensor, class_idx=class_idx, **xai_kwargs)
 
-        # 1. Prepare your dimensions exactly how you always do
-        attr = attributions.squeeze(0)
-        attr = attr.permute(1, 2, 0)
-        attr = attr.detach().cpu().numpy()
+        # 5. Format dimensions for Plotting
+        attr = attributions.squeeze(0).permute(1, 2, 0).detach().cpu().numpy()
 
-        # 2. Create a single figure and axis (no layout array)
+        # 6. Build the Visualizations
         fig, ax = plt.subplots(figsize=(6, 6))
 
-        # Extract the configuration properties dynamically from your runtime options
         baseline_type = xai_kwargs.get("baseline", "none") if method_name in ["kernel_shap", "integrated_gradients"] else "N/A"
         sign_type = "all" if method_name in ["integrated_gradients", "saliency", "guided_grad_cam", "kernel_shap"] else "positive"
-        out_method = "heat_map" if method_name in ["grad_cam", "kernel_shap"] else "heat_map"
+        out_method = "heat_map"
 
-        # 3. Call the visualizer with your single 'ax' element
         viz.visualize_image_attr(
             attr, 
             img_np, 
@@ -124,20 +76,19 @@ class XAIPipeline:
         )
 
         image_number = np.random.randint(0, 10000)
-        # 4. Export the resulting visualization
+        
+        # 7. Export the resulting visualization
         output_filename = os.path.join(output_dir, f"{image_number}_{method_name}.png")
         plt.tight_layout()
         fig.savefig(output_filename, bbox_inches='tight', dpi=300)
         plt.close(fig)
-
         print(f"Saved visualization to: {output_filename}\n" + "-"*50)
 
         # 8. Save Experiment Configuration to JSON
-        # Create a clean copy of the config dictionary to save as text
         saveable_config = {
             "image_path": image_path,
-            "prediction": self.labels[class_idx],
-            "confidence": f"{confidence * 100:.2f}%",
+            "prediction": pred_data["pred_label"],
+            "confidence": pred_data["confidence"],
             **{k: v for k, v in config.items() if not isinstance(v, torch.Tensor)} 
         }
         output_dir_config = os.path.join(output_dir, "configs")
