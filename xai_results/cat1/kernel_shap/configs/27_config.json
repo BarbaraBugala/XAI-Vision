@@ -1,0 +1,11 @@
+{
+    "image_path": "data/cat1.png",
+    "prediction": "tabby",
+    "confidence": "74.40%",
+    "n_segments": 50,
+    "compactness": 10,
+    "sigma": 1,
+    "num_samples": 200,
+    "target_layer_name": "layer4",
+    "baseline_type": "blurred"
+}
