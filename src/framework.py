@@ -3,12 +3,11 @@ import os
 import json
 import torch
 import numpy as np
-import matplotlib.pyplot as plt
-from captum.attr import visualization as viz
 
 from xai_methods.registry import XAIRegistry
 from xai_methods.segmentation import get_superpixels
-from run_prediction import run_prediction
+from utils.model_prediction import run_prediction
+from utils.plotting import save_xai_visualization 
 
 class XAIPipeline:
     def run_experiment(self, image_path, method_name, config):
@@ -25,7 +24,9 @@ class XAIPipeline:
         device = pred_data["device"]
 
         # 2. Output location generation
-        output_dir = os.path.join("xai_results", os.path.splitext(os.path.basename(image_path))[0], method_name)
+        baseline_str = config.get("baseline_type", "no_baseline")
+        superpixels_str = f"{config.get('n_segments', 'no_segments')}segments"
+        output_dir = os.path.join("xai_results", os.path.splitext(os.path.basename(image_path))[0], method_name, superpixels_str, baseline_str)
         os.makedirs(output_dir, exist_ok=True)
         
         print(f"File: {image_path} | Pred: {pred_data['pred_label']} ({pred_data['confidence']})")
@@ -56,33 +57,21 @@ class XAIPipeline:
         attributions = explainer.compute(input_tensor, class_idx=class_idx, **xai_kwargs)
 
         # 5. Format dimensions for Plotting
-        attr = attributions.squeeze(0).permute(1, 2, 0).detach().cpu().numpy()
+        attr_np = attributions.squeeze(0).permute(1, 2, 0).detach().cpu().numpy()
 
-        # 6. Build the Visualizations
-        fig, ax = plt.subplots(figsize=(6, 6))
-
-        baseline_type = xai_kwargs.get("baseline", "none") if method_name in ["kernel_shap", "integrated_gradients"] else "N/A"
-        sign_type = "all" if method_name in ["integrated_gradients", "saliency", "guided_grad_cam", "kernel_shap"] else "positive"
-        out_method = "heat_map"
-
-        viz.visualize_image_attr(
-            attr, 
-            img_np, 
-            method=out_method, 
-            sign=sign_type, 
-            show_colorbar=True, 
-            title=f"{method_name} with {baseline_type} baseline", 
-            plt_fig_axis=(fig, ax)
-        )
-
+        # Generate unique image tag
         image_number = np.random.randint(0, 10000)
-        
-        # 7. Export the resulting visualization
-        output_filename = os.path.join(output_dir, f"{image_number}_{method_name}.png")
-        plt.tight_layout()
-        fig.savefig(output_filename, bbox_inches='tight', dpi=300)
-        plt.close(fig)
-        print(f"Saved visualization to: {output_filename}\n" + "-"*50)
+
+        # 6 & 7. Call the externalized plotting function
+        actual_baseline = xai_kwargs.get("baseline", "none") if method_name in ["kernel_shap", "integrated_gradients"] else "N/A"
+        save_xai_visualization(
+            attr=attr_np,
+            img_np=img_np,
+            method_name=method_name,
+            baseline_type=actual_baseline,
+            output_dir=output_dir,
+            image_number=image_number
+        )
 
         # 8. Save Experiment Configuration to JSON
         saveable_config = {
@@ -98,3 +87,11 @@ class XAIPipeline:
             json.dump(saveable_config, f, indent=4)
 
         print(f"Saved configuration to: {config_filename}\n" + "-"*50)
+        
+        return {
+            "model": model,
+            "input_tensor": input_tensor,
+            "class_idx": class_idx,
+            "attributions": attributions,
+            "segments": xai_kwargs.get("segments")
+        }
