@@ -2,8 +2,8 @@ import os
 from framework import XAIPipeline
 
 
-segments_list = [10, 20, 30, 40, 50]
-baseline_types = ["zeros", "blurred", "average", "ones"]
+segments_list = [10] #, 20, 30, 40, 50]
+baseline_types = ["zeros"] #, "blurred", "average", "ones"]
 
 experiment_config = {
         "n_segments": 50,               # for superpixel segmentation
@@ -32,6 +32,8 @@ for segments in segments_list:
             method_name="kernel_shap", 
             config=experiment_config
         )
+        print(outputs["attributions"].shape)
+        print(outputs["segments"].shape)
 
 
 '''
@@ -40,8 +42,8 @@ outputs contains:
     "model": model,
     "input_tensor": input_tensor,
     "class_idx": class_idx,
-    "attributions": attributions,
-    "segments": xai_kwargs.get("segments")
+    "attributions": attributions,               # shape [1, 3, 224, 224]
+    "segments": xai_kwargs.get("segments")      # shape [1, 1, 224, 224]
 }
 
 To get the attributions, you can access it via:
