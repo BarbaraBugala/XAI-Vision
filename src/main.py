@@ -2,8 +2,8 @@ import os
 from framework import XAIPipeline
 
 
-segments_list = [10] #, 20, 30, 40, 50]
-baseline_types = ["zeros"] #, "blurred", "average", "ones"]
+segments_list = [10, 20, 30, 40, 50]
+baseline_types = ["zeros", "blurred", "average", "ones"]
 
 experiment_config = {
         "n_segments": 50,               # for superpixel segmentation
@@ -28,8 +28,8 @@ for segments in segments_list:
         
         # Run the pipeline for the current segment configuration
         outputs = pipeline.run_experiment(
-            image_path=os.path.join("data", "cat1.png"),
-            method_name="kernel_shap", 
+            image_path=os.path.join("data", "cat3.png"),   # you can change the image here
+            method_name="kernel_shap",                     # change the method here
             config=experiment_config
         )
         print(outputs["attributions"].shape)
