@@ -1,0 +1,11 @@
+{
+    "image_path": "data/Bella.png",
+    "prediction": "tabby",
+    "confidence": "65.30%",
+    "n_segments": 10,
+    "compactness": 10,
+    "sigma": 1,
+    "num_samples": 200,
+    "target_layer_name": "layer4",
+    "baseline_type": "zeros"
+}

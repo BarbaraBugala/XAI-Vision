@@ -1,7 +1,7 @@
 # src/XAI_methods/integrated_gradients.py
 import torch
 from captum.attr import IntegratedGradients
-from xai_methods.baselines import get_baseline
+from params.baselines import get_baseline
 
 def integrated_gradients(model, input_tensor, target, baseline=None, n_steps=50):
     """

@@ -5,7 +5,7 @@ import torch
 import numpy as np
 
 from xai_methods.registry import XAIRegistry
-from xai_methods.segmentation import get_superpixels
+from params.segmentation import get_superpixels
 from utils.model_prediction import run_prediction
 from utils.plotting import save_xai_visualization 
 

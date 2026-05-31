@@ -1,7 +1,7 @@
 # src/XAI_methods/kernel_shap.py
 import torch
 from captum.attr import KernelShap
-from xai_methods.baselines import get_baseline
+from params.baselines import get_baseline
 
 def kernel_shap(model, input_tensor, target, baseline=None, segments=None, n_samples=500):
 

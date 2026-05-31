@@ -1,23 +1,27 @@
 import os
 from framework import XAIPipeline
 
+# ------------------------------------- SPECIFY  ----------------------------------------
 
-segments_list = [10, 20, 30, 40, 50]
-baseline_types = ["zeros", "blurred", "average", "ones"]
+image = "cat1.png"
+method = "kernel_shap"
+segments_list = [10] #, 20, 30, 40, 50]
+baseline_types = ["zeros"] #, "blurred", "average", "ones"]
+# layer_list = ["layer4", "layer3", "layer2", "layer1"]   # for grad cam methods
 
 experiment_config = {
-        "n_segments": 50,               # for superpixel segmentation
         "compactness": 10,              # for superpixel segmentation
         "sigma": 1,                     # for superpixel segmentation
         "num_samples": 200,             # for Kernel SHAP sampling
-        "target_layer_name": "layer4",  # for Grad-CAM methods
-        "baseline_type": "zeros"      # for baseline generation (options: 'zeros', 'blurred', 'average', 'ones')
     }
+
+# -----------------------------------------------------------------------------------------
 
 # Initialize your pipeline asset once
 pipeline = XAIPipeline()
-    
-# Loop through each segment count and run the experiment
+
+
+# Loop through each segment count and baseline and run the experiment
 for segments in segments_list:
     for baseline in baseline_types:
         print(f"\n--- Running experiment with n_segments = {segments}, baseline = {baseline} ---")
@@ -28,12 +32,10 @@ for segments in segments_list:
         
         # Run the pipeline for the current segment configuration
         outputs = pipeline.run_experiment(
-            image_path=os.path.join("data", "cat3.png"),   # you can change the image here
-            method_name="kernel_shap",                     # change the method here
+            image_path=os.path.join("data", image),
+            method_name=method,                    
             config=experiment_config
         )
-        print(outputs["attributions"].shape)
-        print(outputs["segments"].shape)
 
 
 '''
