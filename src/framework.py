@@ -47,46 +47,28 @@ class XAIPipeline:
                 "segments": segments,
                 "n_samples": config.get("num_samples", 200)
             }
-        elif method_name in ["integrated_gradients"]:
-            xai_kwargs = {"baseline": config.get("baseline_type", "zeros"), "n_steps": 50}
-        elif method_name in ["grad_cam", "guided_grad_cam"]:
-            xai_kwargs = {"target_layer_name": config.get("target_layer_name", "layer4")}
 
         # 4. Generate Core Attributions
         explainer = XAIRegistry(model=model, method_name=method_name)
         attributions = explainer.compute(input_tensor, class_idx=class_idx, **xai_kwargs)
 
-        # 5. Format dimensions for Plotting
-        attr_np = attributions.squeeze(0).permute(1, 2, 0).detach().cpu().numpy()
 
-        # Generate unique image tag
-        image_number = np.random.randint(0, 10000)
+        if config.get("save_file"):
 
-        # 6 & 7. Call the externalized plotting function
-        actual_baseline = xai_kwargs.get("baseline", "none") if method_name in ["kernel_shap", "integrated_gradients"] else "N/A"
-        save_xai_visualization(
-            attr=attr_np,
-            img_np=img_np,
-            method_name=method_name,
-            baseline_type=actual_baseline,
-            output_dir=output_dir,
-            image_number=image_number
-        )
+            pred_data["image_path"] = image_path 
+            
+            _, image_number = save_xai_visualization(
+                attributions=attributions, # Pass the raw tensor directly!
+                img_np=img_np,
+                method_name=method_name,
+                config=config,
+                pred_data=pred_data,
+                xai_kwargs=xai_kwargs,
+                output_dir=output_dir
+            )
 
-        # 8. Save Experiment Configuration to JSON
-        saveable_config = {
-            "image_path": image_path,
-            "prediction": pred_data["pred_label"],
-            "confidence": pred_data["confidence"],
-            **{k: v for k, v in config.items() if not isinstance(v, torch.Tensor)} 
-        }
-        output_dir_config = os.path.join(output_dir, "configs")
-        os.makedirs(output_dir_config, exist_ok=True)
-        config_filename = os.path.join(output_dir_config, f"{image_number}_config.json")
-        with open(config_filename, "w") as f:
-            json.dump(saveable_config, f, indent=4)
-
-        print(f"Saved configuration to: {config_filename}\n" + "-"*50)
+        if config.get("insertion-deletion_score"):
+            pass
         
         return {
             "model": model,
