@@ -36,3 +36,66 @@ attributions = explainer.compute(input_tensor, class_idx=class_idx, **xai_kwargs
 
 print("Raw Attributions Shape:", attributions.shape)
 ```
+
+
+# Running the Evaluation with Shapiq.vision
+
+Because the extension is under active development and managed via `uv`, it is pulled directly from its Git repository rather than a public package registry like PyPI.
+
+---
+
+## Setup Instructions
+
+Choose **one** of the following options based on your local environment setup. 
+
+### Option A: Using Standard `pip`
+If your evaluation environment uses a standard virtual environment (`venv`, `virtualenv`, or `conda`), run the following commands:
+
+1. **Navigate** to this repository and **activate** your virtual environment:
+```bash
+cd /path/to/evaluation-repo
+source .venv/bin/activate  # On Windows: .venv\Scripts\Activate.ps1
+
+```
+
+2. **Install the library directly from the Git Fork**:
+```bash
+pip install git+https://github.com/S2k-1/shapiq.git@main
+
+```
+
+
+### Option B: Using `uv` (Fastest Setup)
+
+If you have `uv` installed locally, it can install the Git dependency into your active virtual environment much faster:
+
+1. **Navigate** to this evaluation repository:
+```bash
+cd /path/to/evaluation-repo
+
+```
+
+2. **Install via uv pip**:
+```bash
+uv pip install git+https://github.com/S2k-1/shapiq.git@main
+
+```
+
+
+## How to Get Updates / Pull Latest Changes
+
+Because this library is being actively developed, the code on the remote branch will change. To pull the latest backend updates into your evaluation environment, you must force a reinstall by running the command with the `--force-reinstall` (pip) or `--refresh` (uv) flag:
+
+* **For pip users:**
+```bash
+pip install --force-reinstall git+https://github.com/S2k-1/shapiq.git@main
+
+```
+
+* **For uv users:**
+```bash
+uv pip install --refresh git+https://github.com/S2k-1/shapiq.git@main
+
+```
+
+
