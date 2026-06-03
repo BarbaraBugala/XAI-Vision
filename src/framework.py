@@ -8,6 +8,7 @@ from xai_methods.registry import XAIRegistry
 from params.segmentation import get_superpixels
 from utils.model_prediction import run_prediction
 from utils.plotting import save_xai_visualization 
+from xai_methods.proxy_shap import interaction_values_to_tensor
 
 class XAIPipeline:
     def run_experiment(self, image_path, method_name, config):
@@ -48,10 +49,33 @@ class XAIPipeline:
                 "n_samples": config.get("num_samples", 200)
             }
 
+        elif method_name == "proxy_shap":
+            segments = get_superpixels(
+                input_tensor,
+                n_segments=config.get("n_segments", 50),
+                compactness=config.get("compactness", 10),
+                sigma=config.get("sigma", 1)
+            ).to(device)
+
+            xai_kwargs = {
+                "baseline": config.get("baseline_type", "zeros"),
+                "segments": segments,
+                "max_order": config.get("max_order", 2),
+                "budget": config.get("budget", 512),
+                "index": config.get("index", "SII"),
+                "adjustment": config.get("adjustment", "msr"),
+            }
+
         # 4. Generate Core Attributions
         explainer = XAIRegistry(model=model, method_name=method_name)
         attributions = explainer.compute(input_tensor, class_idx=class_idx, **xai_kwargs)
 
+        if method_name == "proxy_shap":
+            attributions = interaction_values_to_tensor(
+                attributions,
+                segments=xai_kwargs["segments"],
+                image_shape=input_tensor.shape
+            )
 
         if config.get("save_file"):
 

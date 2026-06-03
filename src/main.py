@@ -4,7 +4,7 @@ from framework import XAIPipeline
 # ------------------------------------- SPECIFY  ----------------------------------------
 
 image = "cat1.png"
-method = "kernel_shap"
+method = "proxy_shap"
 
 experiment_config = {
         "n_segments": 20,
@@ -14,6 +14,11 @@ experiment_config = {
         "num_samples": 200,                  # for Kernel SHAP sampling
         "save_file": False,                  # if you want to save output image set to True
         "insertion-deletion_score": False,
+        "max_order": 2,       # 1 = attributions only, 2 = pairwise interactions
+        "budget": 512,        # analogous to num_samples in KernelSHAP
+        "index": "SII",       # or "k-SII", "BII"
+        "adjustment": "msr",  # or "svarm", "kernelshapiq"
+        "save_file": True,
     }
 
 # -----------------------------------------------------------------------------------------
