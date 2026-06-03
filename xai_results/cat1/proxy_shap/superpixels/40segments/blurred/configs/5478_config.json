@@ -1,0 +1,16 @@
+{
+    "image_path": "data/cat1.png",
+    "prediction": "tabby",
+    "confidence": "74.40%",
+    "segmentation": "superpixels",
+    "n_segments": 40,
+    "baseline_type": "blurred",
+    "compactness": 10,
+    "sigma": 1,
+    "num_samples": 200,
+    "max_order": 2,
+    "budget": 512,
+    "index": "SII",
+    "adjustment": "msr",
+    "save_file": true
+}

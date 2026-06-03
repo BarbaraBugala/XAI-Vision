@@ -1,0 +1,16 @@
+{
+    "image_path": "data/Bella.png",
+    "prediction": "tabby",
+    "confidence": "65.30%",
+    "segmentation": "superpixels",
+    "n_segments": 50,
+    "baseline_type": "blurred",
+    "compactness": 10,
+    "sigma": 1,
+    "num_samples": 200,
+    "max_order": 2,
+    "budget": 512,
+    "index": "SII",
+    "adjustment": "msr",
+    "save_file": true
+}

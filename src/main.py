@@ -3,12 +3,13 @@ from framework import XAIPipeline
 
 # ------------------------------------- SPECIFY  ----------------------------------------
 
-image = "cat1.png"
+image = "Bella.png"
 method = "proxy_shap"
 model_name = "resnet18"                      # options: ["resnet18", "vit_b_16"]
 
 experiment_config = {
-        "n_segments": 40,
+        "segmentation": "superpixels",          # options ["superpixels", "grid"]
+        "n_segments": 50,
         "baseline_type": "blurred",          # options ["zeros", "blurred", "average", "ones"]
         "compactness": 10,                   # for superpixel segmentation
         "sigma": 1,                          # for superpixel segmentation

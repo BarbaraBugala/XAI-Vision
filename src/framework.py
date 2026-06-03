@@ -5,7 +5,7 @@ import torch
 import numpy as np
 
 from xai_methods.registry import XAIRegistry
-from params.segmentation import get_superpixels
+from params.segmentation_registry import get_segmentation
 from models.model_prediction import run_prediction
 from plots.plotting import save_xai_visualization 
 from xai_methods.proxy_shap import interaction_values_to_tensor
@@ -27,7 +27,8 @@ class XAIPipeline:
         # 2. Output location generation
         baseline_str = config.get("baseline_type", "no_baseline")
         superpixels_str = f"{config.get('n_segments', 'no_segments')}segments"
-        output_dir = os.path.join("xai_results", os.path.splitext(os.path.basename(image_path))[0], method_name, superpixels_str, baseline_str)
+        superpixels_type_str = config.get("segmentation", "no_segmentation")
+        output_dir = os.path.join("xai_results", os.path.splitext(os.path.basename(image_path))[0], method_name, superpixels_type_str, superpixels_str, baseline_str)
         os.makedirs(output_dir, exist_ok=True)
         
         print(f"File: {image_path} | Pred: {pred_data['pred_label']} ({pred_data['confidence']})")
@@ -35,28 +36,20 @@ class XAIPipeline:
 
         # 3. Dynamic Kwargs Mapping based on targeted features
         xai_kwargs = {}
+        segments = get_segmentation(
+            method=config.get("segmentation", "superpixels"),
+            image=input_tensor,
+            config=config,
+        ).to(device)
+
+        # 4. Dynamic Kwargs Mapping
         if method_name == "kernel_shap":
-            segments = get_superpixels(
-                input_tensor, 
-                n_segments=config.get("n_segments", 50), 
-                compactness=config.get("compactness", 10), 
-                sigma=config.get("sigma", 1)
-            ).to(device)
-            
             xai_kwargs = {
                 "baseline": config.get("baseline_type", "zeros"),
                 "segments": segments,
-                "n_samples": config.get("num_samples", 200)
+                "n_samples": config.get("num_samples", 200),
             }
-
         elif method_name == "proxy_shap":
-            segments = get_superpixels(
-                input_tensor,
-                n_segments=config.get("n_segments", 50),
-                compactness=config.get("compactness", 10),
-                sigma=config.get("sigma", 1)
-            ).to(device)
-
             xai_kwargs = {
                 "baseline": config.get("baseline_type", "zeros"),
                 "segments": segments,
