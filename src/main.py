@@ -5,20 +5,19 @@ from framework import XAIPipeline
 
 image = "cat1.png"
 method = "proxy_shap"
+model_name = "resnet18"                      # options: ["resnet18", "vit_b_16"]
 
 experiment_config = {
-        "n_segments": 20,
+        "n_segments": 40,
         "baseline_type": "blurred",          # options ["zeros", "blurred", "average", "ones"]
         "compactness": 10,                   # for superpixel segmentation
         "sigma": 1,                          # for superpixel segmentation
         "num_samples": 200,                  # for Kernel SHAP sampling
-        "save_file": False,                  # if you want to save output image set to True
-        "insertion-deletion_score": False,
-        "max_order": 2,       # 1 = attributions only, 2 = pairwise interactions
-        "budget": 512,        # analogous to num_samples in KernelSHAP
-        "index": "SII",       # or "k-SII", "BII"
-        "adjustment": "msr",  # or "svarm", "kernelshapiq"
-        "save_file": True,
+        "max_order": 2,                      # 1 = attributions only, 2 = pairwise interactions
+        "budget": 512,                       # analogous to num_samples in KernelSHAP
+        "index": "SII",                      # or "k-SII", "BII"
+        "adjustment": "msr",                 # or "svarm", "kernelshapiq"
+        "save_file": True,                   # if you want to save output image set to True
     }
 
 # -----------------------------------------------------------------------------------------
@@ -28,6 +27,7 @@ pipeline = XAIPipeline()
 
 
 outputs = pipeline.run_experiment(
+            model_name=model_name,
             image_path=os.path.join("data", image),
             method_name=method,                    
             config=experiment_config

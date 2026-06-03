@@ -6,17 +6,17 @@ import numpy as np
 
 from xai_methods.registry import XAIRegistry
 from params.segmentation import get_superpixels
-from utils.model_prediction import run_prediction
-from utils.plotting import save_xai_visualization 
+from models.model_prediction import run_prediction
+from plots.plotting import save_xai_visualization 
 from xai_methods.proxy_shap import interaction_values_to_tensor
 
 class XAIPipeline:
-    def run_experiment(self, image_path, method_name, config):
+    def run_experiment(self, image_path, method_name, config, model_name="resnet18"):
         """
         Orchestrates an XAI interpretation task using precomputed predictions.
         """
         # 1. Extract unified prediction outputs directly
-        pred_data = run_prediction(image_path)
+        pred_data = run_prediction(image_path, model_name=model_name)
         
         model = pred_data["model"]
         input_tensor = pred_data["input_tensor"]
