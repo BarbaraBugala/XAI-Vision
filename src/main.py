@@ -14,10 +14,7 @@ experiment_config = {
         "compactness": 10,                   # for superpixel segmentation
         "sigma": 1,                          # for superpixel segmentation
         "num_samples": 200,                  # for Kernel SHAP sampling
-        "max_order": 2,                      # 1 = attributions only, 2 = pairwise interactions
-        "budget": 512,                       # analogous to num_samples in KernelSHAP
-        "index": "SII",                      # or "k-SII", "BII"
-        "adjustment": "msr",                 # or "svarm", "kernelshapiq"
+        "max_order": 2,                      # 1 = attributions only, 2 = pairwise interactions (for proxy shap)
         "save_file": True,                   # if you want to save output image set to True
     }
 

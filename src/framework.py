@@ -54,7 +54,7 @@ class XAIPipeline:
                 "baseline": config.get("baseline_type", "zeros"),
                 "segments": segments,
                 "max_order": config.get("max_order", 2),
-                "budget": config.get("budget", 512),
+                "budget": config.get("num_samples", 512),
                 "index": config.get("index", "SII"),
                 "adjustment": config.get("adjustment", "msr"),
             }
