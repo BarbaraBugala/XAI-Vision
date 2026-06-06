@@ -29,6 +29,10 @@ def plot_kernel_shap_grid(root_dir, output_path=None):
         segment_label = segment_dir.name
         for col_idx, baseline_name in enumerate(baseline_order):
             ax = axes[row_idx][col_idx]
+            ax.set_xticks([])
+            ax.set_yticks([])
+            for spine in ax.spines.values():
+                spine.set_visible(False)
             image_dir = segment_dir / baseline_name
             if image_dir.exists() and image_dir.is_dir():
                 image_files = sorted([f for f in image_dir.iterdir() if f.suffix.lower() in {'.png', '.jpg', '.jpeg'}])
@@ -57,7 +61,7 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser(description='Plot Kernel SHAP results in a grid.')
-    parser.add_argument('--root', type=str, default='xai_results/Bella/kernel_shap',
+    parser.add_argument('--root', type=str, default='xai_results/cat3/kernel_shap',
                         help='Root folder containing segment and baseline subfolders.')
     parser.add_argument('--output', type=str, default=None,
                         help='Output file path for the saved grid image.')
