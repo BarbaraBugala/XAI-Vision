@@ -28,7 +28,7 @@ class XAIPipeline:
         baseline_str = config.get("baseline_type", "no_baseline")
         superpixels_str = f"{config.get('n_segments', 'no_segments')}segments"
         superpixels_type_str = config.get("segmentation", "no_segmentation")
-        output_dir = os.path.join("xai_results", os.path.splitext(os.path.basename(image_path))[0], method_name, superpixels_type_str, superpixels_str, baseline_str)
+        output_dir = os.path.join("xai_results", os.path.splitext(os.path.basename(image_path))[0], model_name, method_name, superpixels_type_str, superpixels_str, baseline_str)
         os.makedirs(output_dir, exist_ok=True)
         
         print(f"File: {image_path} | Pred: {pred_data['pred_label']} ({pred_data['confidence']})")

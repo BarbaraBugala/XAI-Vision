@@ -1,0 +1,13 @@
+{
+    "image_path": "data/ood5.png",
+    "prediction": "cucumber",
+    "confidence": "55.80%",
+    "segmentation": "superpixels",
+    "n_segments": 40,
+    "baseline_type": "zeros",
+    "compactness": 10,
+    "sigma": 1,
+    "num_samples": 200,
+    "max_order": 2,
+    "save_file": true
+}

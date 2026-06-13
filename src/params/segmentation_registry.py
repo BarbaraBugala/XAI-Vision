@@ -9,7 +9,7 @@ SEGMENTATION_REGISTRY = {
 
 SEGMENTATION_PARAMS = {
     "superpixels": ("n_segments", "compactness", "sigma"),
-    "grid": ("n_segments"),
+    "grid": ("n_segments",),
 }
 
 def get_segmentation(method: str, image, config: dict) -> torch.Tensor:

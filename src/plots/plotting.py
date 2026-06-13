@@ -28,7 +28,7 @@ def save_xai_visualization(attributions, img_np, method_name, config, pred_data,
         method=out_method, 
         sign=sign_type, 
         show_colorbar=True, 
-        title=f"{method_name} with {actual_baseline} baseline", 
+        title=f"{method_name} with {actual_baseline} baseline and class {pred_data["pred_label"]} ({pred_data["confidence"]})", 
         plt_fig_axis=(fig, ax)
     )
 

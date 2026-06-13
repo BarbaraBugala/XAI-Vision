@@ -51,7 +51,7 @@ def plot_kernel_shap_grid(root_dir, output_path=None):
 
     plt.tight_layout()
     if output_path is None:
-        output_path = root_dir / 'kernel_shap_grid.png'
+        output_path = root_dir / 'shap_grid.png'
     fig.savefig(output_path, dpi=300, bbox_inches='tight')
     plt.close(fig)
     return output_path
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser(description='Plot Kernel SHAP results in a grid.')
-    parser.add_argument('--root', type=str, default='xai_results/cat3/kernel_shap',
+    parser.add_argument('--root', type=str, default='xai_results/ood2/vitb16/kernel_shap/grid',
                         help='Root folder containing segment and baseline subfolders.')
     parser.add_argument('--output', type=str, default=None,
                         help='Output file path for the saved grid image.')

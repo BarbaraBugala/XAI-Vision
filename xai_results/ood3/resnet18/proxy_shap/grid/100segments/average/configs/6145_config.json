@@ -1,0 +1,13 @@
+{
+    "image_path": "data/ood3.png",
+    "prediction": "ptarmigan",
+    "confidence": "20.93%",
+    "segmentation": "grid",
+    "n_segments": 100,
+    "baseline_type": "average",
+    "compactness": 10,
+    "sigma": 1,
+    "num_samples": 200,
+    "max_order": 2,
+    "save_file": true
+}

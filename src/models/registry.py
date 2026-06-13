@@ -11,7 +11,7 @@ def get_model_config(model_name: str) -> dict:
             "model_fn": models.resnet18,
             "weights": models.ResNet18_Weights.DEFAULT,
         },
-        "vit_b_16": {
+        "vitb16": {
             "model_fn": models.vit_b_16,
             "weights": models.ViT_B_16_Weights.DEFAULT,
         },

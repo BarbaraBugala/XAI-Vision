@@ -6,7 +6,7 @@ import numpy as np
 from models.registry import get_model_config
 
 
-def run_prediction(image_path, model_name="resnet18", device=None):
+def run_prediction(image_path, model_name="resnet18", device=None, top_prediction=0):
     if device is None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -28,14 +28,16 @@ def run_prediction(image_path, model_name="resnet18", device=None):
         output = model(input_tensor)
 
     probabilities = F.softmax(output[0], dim=0)
-    prob, class_idx = torch.max(probabilities, dim=0)
+
+    # Get top-k predictions
+    top_probs, top_indices = torch.topk(probabilities, k=3)
 
     return {
         "model": model,
         "input_tensor": input_tensor,
         "img_np": img_np,
-        "class_idx": class_idx.item(),
-        "pred_label": cfg["labels"][class_idx.item()],
-        "confidence": f"{prob.item() * 100:.2f}%",
+        "class_idx": top_indices[top_prediction].item(),
+        "pred_label": cfg["labels"][top_indices[top_prediction].item()],
+        "confidence": f"{top_probs[top_prediction].item() * 100:.2f}%",
         "device": device,
     }

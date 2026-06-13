@@ -1,0 +1,13 @@
+{
+    "image_path": "data/ood2.png",
+    "prediction": "albatross",
+    "confidence": "30.97%",
+    "segmentation": "superpixels",
+    "n_segments": 60,
+    "baseline_type": "average",
+    "compactness": 10,
+    "sigma": 1,
+    "num_samples": 200,
+    "max_order": 2,
+    "save_file": true
+}
