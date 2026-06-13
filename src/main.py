@@ -4,6 +4,10 @@ from framework import XAIPipeline
 # ------------------------------------- SPECIFY  ----------------------------------------
 
 method = "kernel_shap"
+# model_name options:
+#   "resnet18"   — torchvision ResNet, pixel masking (CNNArchitecture)
+#   "vitb16"     — torchvision ViT, pixel masking (CNNArchitecture)
+#   "vit_hf_b16" — HuggingFace ViT, pixel masking (HuggingFacePixelArchitecture; needs transformers)
 model_name = "resnet18"
 image = "ood1.png"
 slic_segmentations = [20, 40, 60]
@@ -68,7 +72,7 @@ outputs contains:
     "input_tensor": input_tensor,
     "class_idx": class_idx,
     "attributions": attributions,               # shape [1, 3, 224, 224]
-    "segments": xai_kwargs.get("segments")      # shape [1, 1, 224, 224]
+    "segments": player_masks                    # shape (n_players, H, W) bool
 }
 
 To get the attributions, you can access it via:

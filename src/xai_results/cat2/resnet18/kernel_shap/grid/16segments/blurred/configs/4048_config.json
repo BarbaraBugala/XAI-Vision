@@ -1,0 +1,10 @@
+{
+    "image_path": "../data/cat2.png",
+    "prediction": "tabby",
+    "confidence": "64.88%",
+    "segmentation": "grid",
+    "n_segments": 16,
+    "baseline_type": "blurred",
+    "num_samples": 16,
+    "save_file": true
+}
