@@ -1,11 +1,10 @@
 # src/XAI_methods/registry.py
 import torch
-from xai_methods.kernel_shap import kernel_shap
+from xai_methods.shap import kernel_shap, proxy_shap
 from xai_methods.saliency import saliency
 from xai_methods.integrated_grads import integrated_gradients
 from xai_methods.grad_cam import grad_cam
 from xai_methods.guided_grad_cam import guided_grad_cam
-from xai_methods.proxy_shap import proxy_shap
 
 class XAIRegistry:
     def __init__(self, model, method_name: str):
