@@ -1,0 +1,13 @@
+{
+    "image_path": "data/ood1.png",
+    "prediction": "assault rifle",
+    "confidence": "5.19%",
+    "segmentation": "grid",
+    "n_segments": 50,
+    "baseline_type": "zeros",
+    "compactness": 10,
+    "sigma": 1,
+    "num_samples": 200,
+    "max_order": 2,
+    "save_file": true
+}

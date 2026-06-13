@@ -61,7 +61,7 @@ if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser(description='Plot Kernel SHAP results in a grid.')
-    parser.add_argument('--root', type=str, default='xai_results/ood2/vitb16/kernel_shap/grid',
+    parser.add_argument('--root', type=str, default='xai_results/ood1/top2/resnet18/proxy_shap/grid',
                         help='Root folder containing segment and baseline subfolders.')
     parser.add_argument('--output', type=str, default=None,
                         help='Output file path for the saved grid image.')

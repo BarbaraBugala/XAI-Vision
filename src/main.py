@@ -3,12 +3,12 @@ from framework import XAIPipeline
 
 # ------------------------------------- SPECIFY  ----------------------------------------
 
-method = "proxy_shap"
-model_name = "vitb16"
+method = "kernel_shap"
+model_name = "resnet18"
+image = "ood1.png"
 slic_segmentations = [20, 40, 60]
 grid_segmentations = [50, 75, 100]
-baselines = ["zeros", "blurred", "average", "ones"]
-images = ["ood1.png", "ood2.png", "ood3.png", "ood4.png", "ood5.png"]          
+baselines = ["zeros", "blurred", "average", "ones"]        
 
 experiment_config = {
         "segmentation": "grid",          # options ["superpixels", "grid"]
@@ -26,17 +26,16 @@ experiment_config = {
 pipeline = XAIPipeline()
 
 
-for image in images:
-    for segm in grid_segmentations:
-        for baseline in baselines:
-            experiment_config["n_segments"] = segm
-            experiment_config["baseline_type"] = baseline
-            outputs = pipeline.run_experiment(
-                    model_name=model_name,
-                    image_path=os.path.join("data", image),
-                    method_name=method,         
-                    config=experiment_config
-                )
+for segm in grid_segmentations:
+    for baseline in baselines:
+        experiment_config["n_segments"] = segm
+        experiment_config["baseline_type"] = baseline
+        outputs = pipeline.run_experiment(
+                model_name=model_name,
+                image_path=os.path.join("data", image),
+                method_name=method,         
+                config=experiment_config
+            )
                 
 
 # image = "Bella.png"
