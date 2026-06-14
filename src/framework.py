@@ -26,7 +26,7 @@ class XAIPipeline:
             "xai_results",
             os.path.splitext(os.path.basename(image_path))[0],
             model_name,
-            method_name,
+            "shapiq_vision",
             segmentation,
             f"{n_segments}segments",
             baseline_str,

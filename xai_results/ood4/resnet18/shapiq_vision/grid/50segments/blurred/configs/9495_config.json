@@ -1,0 +1,13 @@
+{
+    "image_path": "data/ood4.png",
+    "prediction": "sturgeon",
+    "confidence": "11.64%",
+    "segmentation": "grid",
+    "n_segments": 50,
+    "baseline_type": "blurred",
+    "compactness": 10,
+    "sigma": 1,
+    "num_samples": 200,
+    "max_order": 2,
+    "save_file": true
+}
